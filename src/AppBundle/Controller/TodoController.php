@@ -105,7 +105,7 @@ class TodoController extends Controller
                 array('choices' => array('Low' => 'Low', 'Normal' => 'Normal', 'High' => 'High'),
                 'attr' => array('class' => 'form-control mb-3')))
                 ->add('due_date', TypeDateTimeType::class, array('attr' => array('class' => 'formcontrol mb-3')))
-                ->add('save', SubmitType::class, array('label' => 'Create Todo', 'attr' => array('class' => 'btn btn-primary')))
+                ->add('save', SubmitType::class, array('label' => 'Update Todo', 'attr' => array('class' => 'btn btn-primary')))
                 ->getForm();
 
         $form->handleRequest($request);
@@ -156,5 +156,23 @@ class TodoController extends Controller
         return $this->render('todo/details.html.twig', array(
             'todo' => $todo
         ));
+    }
+
+     /**
+     * @Route("/todo/delete/{id}", name="todo_delete")
+     */
+    public function deleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $todo = $em->getRepository('AppBundle:Todo')->find($id);
+
+        $em->remove($todo);
+        $em->flush();
+
+        $this->addFlash(
+            'notice',
+            'Todo removed'
+        );
+        return $this->redirectToRoute('todo_list');
     }
 }
